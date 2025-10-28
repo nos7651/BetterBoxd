@@ -11,6 +11,7 @@ try:
                             ssh_username=username,
                             ssh_password=password,
                             remote_bind_address=('127.0.0.1', 5432)) as server:
+
         print("SSH tunnel established")
         params = {
             'dbname': dbName,
@@ -28,5 +29,6 @@ try:
         #DB work here....
 
         conn.close()
+
 except Exception as e:
     print("Connection failed:", e)
