@@ -63,3 +63,99 @@ def view_playlists(username):
     finally:
         conn.close()
         server.stop()
+
+def add_movie_to_playlist(username, playlist_id, movie_id):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as curs:
+            curs.execute("""
+                SELECT 1 FROM playlist_contains_movie 
+                WHERE movie_id = %s AND playlist_id = %s;
+            """, (movie_id, playlist_id))
+            exists = curs.fetchone()
+            if exists:
+                print(f"Movie {movie_id} is already in playlist {playlist_id}.")
+                return
+
+            curs.execute("""
+                SELECT COUNT(*) 
+                FROM user_watches_movie
+                WHERE username = %s AND movie_id = %s;
+            """, (username, movie_id))
+            result = curs.fetchone
+            times_watched = result[0] if result else 0
+
+            curs.execute("""
+            INSERT INTO playlist_contains_movie(playlist_id, movie_id, times_watched)
+            VALUES (%s, %s, %s);
+            """, (playlist_id, movie_id, times_watched))
+
+            conn.commit()
+            print(f"Movie {movie_id} added to playlist {playlist_id}.")
+
+    except Exception as e:
+        print("Couldnt add movie:", e)
+
+    finally:
+        conn.close()
+        server.stop()
+
+def remove_movie_from_playlist(playlist_id, movie_id):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as curs:
+            curs.execute("""
+                SELECT 1 FROM playlist_contains_movie
+                WHERE playlist_id = %s AND movie_id = %s;
+            """, (playlist_id, movie_id))
+            exists = curs.fetchone()
+
+            if not exists:
+                print(f"Movie {movie_id} is not in playlist {playlist_id}.")
+                return
+
+            curs.execute("""
+                DELETE FROM playlist_contains_movie
+                WHERE playlist_id = %s AND movie_id = %s;
+            """, (playlist_id, movie_id))
+
+            conn.commit()
+            print(f"Movie {movie_id} successfully removed from playlist {playlist_id}.")
+
+    except Exception as e:
+        print("Error removing movie from playlist:", e)
+
+    finally:
+        conn.close()
+        server.stop()
+
+def rename_playlist(playlist_id, new_name):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as curs:
+            curs.execute("""
+                SELECT playlist_id, playlist_name
+                FROM playlist
+                WHERE playlist_id = %s;
+            """, (playlist_id,))
+            existing = curs.fetchone()
+
+            if not existing:
+                print(f"Playlist with ID {playlist_id} does not exist.")
+                return
+
+            curs.execute("""
+                UPDATE playlist
+                SET playlist_name = %s
+                WHERE playlist_id = %s;
+            """, (new_name, playlist_id))
+
+            conn.commit()
+            print(f"Playlist renamed to '{new_name}' (ID: {playlist_id}).")
+
+    except Exception as e:
+        print("Error renaming playlist:", e)
+
+    finally:
+        conn.close()
+        server.stop()
