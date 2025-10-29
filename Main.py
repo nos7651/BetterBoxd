@@ -61,6 +61,7 @@ def main_menu():
                     selected_movie_id = input("Input movie ID: ").strip()
 
                     if selected_movie_id is not None:
+                        print(f"Current chosen movie id:{selected_movie_id}")
                         print("1. Rate")
                         print("2. Mark as Watched")
                         print("3. Add movie to playlist")
@@ -68,10 +69,10 @@ def main_menu():
 
                         choice = input("Choose: ").strip()
                         if choice == "1":
-                            rating = int(input("Enter rating 1 - 5: ").strip())
-                            if rating < 1 or rating > 5:
+                            rating = float(input("Enter rating 1 - 5 (intervals of .5): ").strip())
+                            if rating < 1 or rating > 5 or rating % .5 != 0:
                                 print("Invalid rating.")
-                                continue
+                                break
                             rate_movie(current_user, selected_movie_id, rating)
                             print(f"Rating entered: {rating} / 5")
 

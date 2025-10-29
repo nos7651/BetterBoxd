@@ -39,7 +39,7 @@ def view_playlists(username):
                         '0:00'
                     ) AS total_length
                 FROM playlist p
-                JOIN user_creates_playlist ucp ON p.playlist_id = ucp.playlistid
+                JOIN user_creates_playlist ucp ON p.playlist_id = ucp.playlist_id
                 LEFT JOIN playlist_contains_movie pcm ON p.playlist_id = pcm.playlist_id
                 LEFT JOIN movie m ON pcm.movie_id = m.movie_id
                 WHERE ucp.username = %s

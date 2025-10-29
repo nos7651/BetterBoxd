@@ -69,8 +69,8 @@ def rate_movie(username, movie_id, star_rating):
         with conn.cursor() as cur:
             cur.execute("""
                 INSERT INTO user_rates_movie (username, movie_id, star_rating)
-                    VALUES (%s, %s, %f)
-            """, (username, movie_id, star_rating))
+                    VALUES (%s, %s, %s)
+            """, (username, movie_id, str(star_rating)))
     except Exception as e:
         print("Error during rating:", e)
 
