@@ -1,4 +1,6 @@
 from queries import create_user
+#pip uninstall psycopg -y
+#pip install psycopg[binary] --force-reinstall --no-cache-dir
 
 def main_menu():
     while True:
