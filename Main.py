@@ -1,5 +1,5 @@
 from queries import create_user, login
-from playlist import create_playlist
+from playlist import create_playlist, view_playlists
 
 def main_menu():
     current_user = None
@@ -10,7 +10,8 @@ def main_menu():
             print("1. Search for movies")
             print("2. Log out")
             print("3. Create playlist")
-            print("4. Exit")
+            print("4. View playlist")
+            print("5. Exit")
         else:
             print("1. Search for movies")
             print("2. Login")
@@ -31,14 +32,16 @@ def main_menu():
             elif choice == "3":
                 playlist_name = input("Enter playlist name: ")
                 create_playlist(current_user, playlist_name)
-                
+
             elif choice == "4":
+                view_playlists(current_user)
+
+            elif choice == "5":
                 print("Goodbye!")
                 break
 
             else:
                 print("Invalid option.")
-
 
         else:
             if choice == "1":
