@@ -1,6 +1,5 @@
 from User import create_user, login
 from Movies import *
-from queries import create_user, login
 from playlist import create_playlist, view_playlists, add_movie_to_playlist, remove_movie_from_playlist, rename_playlist
 
 def main_menu():
@@ -10,13 +9,9 @@ def main_menu():
         if current_user:
             print(f"\nLogged in as: {current_user}")
             print("1. Search for movies")
-            print("2. Log out")
-            print("3. Create playlist")
-            print("4. View playlist")
-            print("5. Add movie to playlist")
-            print("6. Remove movie from playlist")
-            print("7. Change playlist name")
-            print("8. Exit")
+            print("2. Playlists ")
+            print("3. Change playlist name")
+            print("4. Exit")
         else:
             print("1. Search for movies")
             print("2. Login")
@@ -58,39 +53,49 @@ def main_menu():
                         year = input("Enter release year (e.g., 2019): ").strip()
                         search_movie_release(year)
 
-
                     elif choice == "6":
-                        return
+                        break
                     else:
                         print("Invalid option.")
-
             elif choice == "2":
+                while True:
+                    print("1. Create playlist")
+                    print("2. View playlists")
+                    print("3. Add a movie to a playlist")
+                    print("4. Remove movie from playlist")
+                    print("5. Rename playlist")
+                    print("6. Delete playlist")
+                    print("7. Back")
+                    num = input("Enter your choice:")
+                    if num == "1":
+                        playlist_name = input("Enter playlist name: ")
+                        create_playlist(current_user, playlist_name)
+
+                    elif num == "2":
+                        view_playlists(current_user)
+
+                    elif num == "3":
+                        playlist_id = input("Enter the playlist ID: ").strip()
+                        movie_id = input("Enter the movie ID: ").strip()
+                        add_movie_to_playlist(current_user, playlist_id, movie_id)
+
+                    elif num == "4":
+                        playlist_id = input("Enter the playlist ID: ").strip()
+                        movie_id = input("Enter the movie ID to remove: ").strip()
+                        remove_movie_from_playlist(playlist_id, movie_id)
+
+                    elif num == "5":
+                        playlist_id = input("Enter the playlist ID to rename: ").strip()
+                        new_name = input("Enter the new name: ").strip()
+                        rename_playlist(playlist_id, new_name)
+                    elif num == "6":
+                        print("nothing here yet")
+                    elif num == "7":
+                        break
+            if choice == "3":
                 print(f"Logged out {current_user}.")
                 current_user = None
-
-            elif choice == "3":
-                playlist_name = input("Enter playlist name: ")
-                create_playlist(current_user, playlist_name)
-
             elif choice == "4":
-                view_playlists(current_user)
-
-            elif choice == "5":
-                playlist_id = input("Enter the playlist ID: ").strip()
-                movie_id = input("Enter the movie ID: ").strip()
-                add_movie_to_playlist(current_user, playlist_id, movie_id)
-
-            elif choice == "6":
-                playlist_id = input("Enter the playlist ID: ").strip()
-                movie_id = input("Enter the movie ID to remove: ").strip()
-                remove_movie_from_playlist(playlist_id, movie_id)
-
-            elif choice == "7":
-                playlist_id = input("Enter the playlist ID to rename: ").strip()
-                new_name = input("Enter the new name: ").strip()
-                rename_playlist(playlist_id, new_name)
-
-            elif choice == "8":
                 print("Goodbye!")
                 break
 
