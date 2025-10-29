@@ -63,3 +63,20 @@ def login(username, password):
         server.stop()
         print("connection closed")
 
+def rate_movie(username, movie_id, star_rating):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO user_rates_movie (username, movie_id, star_rating)
+                    VALUES (%s, %s, %f)
+            """, (username, movie_id, star_rating))
+    except Exception as e:
+        print("Error during rating:", e)
+
+    except KeyboardInterrupt:
+        print("User interrupted.")
+        
+    finally:
+        conn.close()
+        server.stop()
