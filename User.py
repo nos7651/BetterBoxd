@@ -18,6 +18,7 @@ def create_user(username, password, email, first_name, last_name ):
     finally:
         conn.close()
         server.stop()
+        print("connection closed")
 
 
 def login(username, password):
@@ -54,7 +55,11 @@ def login(username, password):
     except Exception as e:
         conn.rollback()
         print("Error during login:", e)
+        conn.close()
+        server.stop()
         return False
     finally:
         conn.close()
         server.stop()
+        print("connection closed")
+
