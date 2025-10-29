@@ -1,5 +1,7 @@
 from User import create_user, login
 from Movies import *
+from queries import create_user, login
+from playlist import create_playlist, view_playlists, add_movie_to_playlist, remove_movie_from_playlist, rename_playlist
 
 def main_menu():
     current_user = None
@@ -9,7 +11,12 @@ def main_menu():
             print(f"\nLogged in as: {current_user}")
             print("1. Search for movies")
             print("2. Log out")
-            print("3. Exit")
+            print("3. Create playlist")
+            print("4. View playlist")
+            print("5. Add movie to playlist")
+            print("6. Remove movie from playlist")
+            print("7. Change playlist name")
+            print("8. Exit")
         else:
             print("1. Search for movies")
             print("2. Login")
@@ -62,12 +69,33 @@ def main_menu():
                 current_user = None
 
             elif choice == "3":
+                playlist_name = input("Enter playlist name: ")
+                create_playlist(current_user, playlist_name)
+
+            elif choice == "4":
+                view_playlists(current_user)
+
+            elif choice == "5":
+                playlist_id = input("Enter the playlist ID: ").strip()
+                movie_id = input("Enter the movie ID: ").strip()
+                add_movie_to_playlist(current_user, playlist_id, movie_id)
+
+            elif choice == "6":
+                playlist_id = input("Enter the playlist ID: ").strip()
+                movie_id = input("Enter the movie ID to remove: ").strip()
+                remove_movie_from_playlist(playlist_id, movie_id)
+
+            elif choice == "7":
+                playlist_id = input("Enter the playlist ID to rename: ").strip()
+                new_name = input("Enter the new name: ").strip()
+                rename_playlist(playlist_id, new_name)
+
+            elif choice == "8":
                 print("Goodbye!")
                 break
 
             else:
                 print("Invalid option.")
-
 
         else:
             if choice == "1":

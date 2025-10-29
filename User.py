@@ -18,6 +18,7 @@ def create_user(username, password, email, first_name, last_name ):
     finally:
         conn.close()
         server.stop()
+        print("connection closed")
 
 
 def login(username, password):
@@ -54,7 +55,28 @@ def login(username, password):
     except Exception as e:
         conn.rollback()
         print("Error during login:", e)
+        conn.close()
+        server.stop()
         return False
+    finally:
+        conn.close()
+        server.stop()
+        print("connection closed")
+
+def rate_movie(username, movie_id, star_rating):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO user_rates_movie (username, movie_id, star_rating)
+                    VALUES (%s, %s, %f)
+            """, (username, movie_id, star_rating))
+    except Exception as e:
+        print("Error during rating:", e)
+
+    except KeyboardInterrupt:
+        print("User interrupted.")
+        
     finally:
         conn.close()
         server.stop()
