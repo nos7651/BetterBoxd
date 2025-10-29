@@ -31,7 +31,7 @@ def view_playlists(username):
         with conn.cursor() as curs:
             curs.execute("""
                 SELECT 
-                    p.pname AS collection_name,
+                    p.playlist_name AS collection_name,
                     COUNT(pcm.movie_id) AS movie_count,
                     COALESCE(
                         FLOOR(SUM(m.length) / 60) ::text || ':' ||
@@ -39,12 +39,12 @@ def view_playlists(username):
                         '0:00'
                     ) AS total_length
                 FROM playlist p
-                JOIN user_creates_playlist ucp ON p.playlistid = ucp.playlistid
-                LEFT JOIN playlist_contains_movie pcm ON p.playlistid = pcm.playlist_id
+                JOIN user_creates_playlist ucp ON p.playlist_id = ucp.playlist_id
+                LEFT JOIN playlist_contains_movie pcm ON p.playlist_id = pcm.playlist_id
                 LEFT JOIN movie m ON pcm.movie_id = m.movie_id
                 WHERE ucp.username = %s
-                GROUP BY p.pname
-                ORDER BY p.pname ASC;
+                GROUP BY p.playlist_name, p.playlist_id
+                ORDER BY p.playlist_name ASC;
             """, (username,))
 
             rows = curs.fetchall()

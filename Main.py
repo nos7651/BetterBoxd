@@ -1,4 +1,4 @@
-from User import create_user, login
+from User import create_user, login, rate_movie
 from Movies import *
 from playlist import create_playlist, view_playlists, add_movie_to_playlist, remove_movie_from_playlist, rename_playlist
 
@@ -57,6 +57,32 @@ def main_menu():
                         break
                     else:
                         print("Invalid option.")
+
+                    selected_movie_id = input("Input movie ID: ").strip()
+
+                    if selected_movie_id is not None:
+                        print("1. Rate")
+                        print("2. Mark as Watched")
+                        print("3. Add movie to playlist")
+                        print("4. Go back")
+
+                        choice = input("Choose: ").strip()
+                        if choice == "1":
+                            rating = int(input("Enter rating 1 - 5: ").strip())
+                            if rating < 1 or rating > 5:
+                                print("Invalid rating.")
+                                continue
+                            rate_movie(current_user, selected_movie_id, rating)
+                            print(f"Rating entered: {rating} / 5")
+
+                        elif choice == "2":
+                            #update watched
+                            continue
+                        elif choice == "3":
+                            playlist_id = int(input("Enter playlist id: ").strip())
+                            add_movie_to_playlist(current_user, playlist_id, selected_movie_id)
+                            print(f"Added movie to playlist: {selected_movie_id}")
+
             elif choice == "2":
                 while True:
                     print("1. Create playlist")
