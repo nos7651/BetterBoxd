@@ -35,7 +35,7 @@ def view_playlists(username):
                     COUNT(pcm.movie_id) AS movie_count,
                     COALESCE(
                         FLOOR(SUM(m.length) / 60) ::text || ':' ||
-                        LPAD((SUM(m.length) % 60)::text, 2, '0'),
+                        LPAD((SUM(m.length) %% 60)::text, 2, '0'),
                         '0:00'
                     ) AS total_length
                 FROM playlist p
@@ -82,7 +82,7 @@ def add_movie_to_playlist(username, playlist_id, movie_id):
                 FROM user_watches_movie
                 WHERE username = %s AND movie_id = %s;
             """, (username, movie_id))
-            result = curs.fetchone
+            result = curs.fetchone()
             times_watched = result[0] if result else 0
 
             curs.execute("""
