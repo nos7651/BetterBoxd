@@ -1,4 +1,4 @@
-from queries import create_user, login
+from User import create_user, login
 
 def main_menu():
     current_user = None
