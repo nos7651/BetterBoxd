@@ -1,12 +1,13 @@
-import psycopg2
+import psycopg
 from sshtunnel import SSHTunnelForwarder
-
-
+import socket
 
 def get_connection():
     username = "don5082"
     password = "C3nt3rfi3ldb8sball3r"
-    db_name = "p320_41"
+    dbname = "p320_41"
+
+    print("Starting tunnel...")
     server = SSHTunnelForwarder(
         ('starbug.cs.rit.edu', 22),
         ssh_username=username,
@@ -14,16 +15,17 @@ def get_connection():
         remote_bind_address=('127.0.0.1', 5432)
     )
     server.start()
+    print("SSH tunnel established!")
 
-    params = {
-        'dbname': db_name,
-        'user': username,
-        'password': password,
-        'host': 'localhost',
-        'port': server.local_bind_port
-    }
-
-    conn = psycopg2.connect(**params)
+    print(f"Connecting to database {dbname} on port {server.local_bind_port}...")
+    conn = psycopg.connect(
+        dbname=dbname,
+        user=username,
+        password=password,
+        host='localhost',
+        port=server.local_bind_port
+    )
+    print("Database connection successful.")
     return conn, server
 
 if __name__ == "__main__":
@@ -31,4 +33,3 @@ if __name__ == "__main__":
     print("Connection successful!")
     conn.close()
     server.stop()
-

@@ -1,34 +1,25 @@
-import psycopg2
-from sshtunnel import SSHTunnelForwarder
+from queries import create_user
 
-username = "don5082"
-password = "C3nt3rfi3ldb8sball3r"
-dbName = "p320_41"
+def main_menu():
+    while True:
+        print("\n===== Movie Database =====")
+        print("1. Create new user")
+        print("2. Exit")
 
+        choice = input("Enter your choice: ")
 
-try:
-    with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
-                            ssh_username=username,
-                            ssh_password=password,
-                            remote_bind_address=('127.0.0.1', 5432)) as server:
+        if choice == "1":
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            first_name = input("Enter your first name: ")
+            last_name = input("Enter your last name: ")
+            email = input("Enter your email: ")
+            create_user(username, password, email, first_name, last_name)
+        elif choice == "2":
+            print("Vamoose!")
+            break
+        else:
+            print("Invalid Option gangy")
 
-        print("SSH tunnel established")
-        params = {
-            'dbname': dbName,
-            'user': username,
-            'password': password,
-            'host': 'localhost',
-            'port': server.local_bind_port
-        }
-
-
-        conn = psycopg2.connect(**params)
-        curs = conn.cursor()
-        print("Database connection established")
-
-        #DB work here....
-
-        conn.close()
-
-except Exception as e:
-    print("Connection failed:", e)
+if __name__ == "__main__":
+    main_menu()
