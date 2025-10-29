@@ -1,6 +1,5 @@
 import psycopg
 from sshtunnel import SSHTunnelForwarder
-import socket
 
 def get_connection():
     username = "don5082"

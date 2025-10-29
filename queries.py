@@ -5,9 +5,9 @@ def create_user(username, password, email, first_name, last_name ):
     try:
         with conn.cursor() as cur:
             cur.execute("""
-                        INSERT INTO app_user (username, password, email, first_name, last_name, creation_date, last_access_ts)
-                        VALUES (%s, %s, %s, %s, %s, NOW(), NOW());
-                        """, (username, password, email, first_name, last_name))
+                    INSERT INTO app_user (username, password, email, first_name, last_name, creation_date, last_access_ts)
+                    VALUES (%s, %s, %s, %s, %s, NOW(), NOW());
+                    """, (username, password, email, first_name, last_name))
             conn.commit()
             print("User created successfully!")
     except Exception as e:
