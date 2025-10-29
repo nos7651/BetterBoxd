@@ -1,2 +1,5 @@
 *.xml
 *.xml
+__pycache__/db.cpython-313.pyc
+__pycache__/queries.cpython-313.pyc
+__pycache__/queries.cpython-313.pyc
