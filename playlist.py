@@ -161,6 +161,27 @@ def rename_playlist(playlist_id, new_name):
         conn.close()
         server.stop()
 
+def watch_playlist(playlist_id):
+    conn, server = get_connection()
+
+    try:
+
+        with conn.cursor() as curs:
+            curs.execute("""
+                UPDATE playlist_contains_movie
+                SET times_watched = times_watched + 1
+                WHERE playlist_id = %s;
+            """, (playlist_id,))
+
+        print("Playlist watched.")
+
+    except Exception as e:
+        print("Error renaming playlist:", e)
+
+    finally:
+        conn.close()
+        server.stop()
+
 def delete_playlist(playlist_id, username):
     conn, server = get_connection()
     try:
