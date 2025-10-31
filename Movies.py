@@ -4,7 +4,7 @@ from db import get_connection
 def print_movies(rows):
     if not rows:
         print("No movies found.")
-        return
+        return None
     print("\nResults:")
     for movie_id, title, length, mpaa, cast_names, director_names, avg_user_rating in rows:
         h, m = divmod((length or 0), 60)
@@ -18,6 +18,8 @@ def print_movies(rows):
             f"  Length: {h}h {m}m\n"
             f"  Ratings: MPAA={mpaa or 'N/A'}, User(avg)={user_str}\n"
         )
+
+    return 1
 
 
 def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
@@ -67,7 +69,7 @@ def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
                 params,
             )
             rows = cur.fetchall()
-            print_movies(rows)
+            return print_movies(rows)
     except Exception as e:
         print("Error fetching movies:", e)
     finally:
@@ -79,7 +81,7 @@ def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
 def search_movie_title(term: str):
     where = "WHERE LOWER(m.title) LIKE LOWER(%s)"
     params = (f"%{term}%",)
-    get_movies(where, params, order_sql="m.title ASC")
+    return get_movies(where, params, order_sql="m.title ASC")
 
 def search_movie_cast(term: str):
 
@@ -98,7 +100,7 @@ def search_movie_cast(term: str):
     )
     """
     params = (f"%{term}%", f"%{term}%")
-    get_movies(where, params, order_sql="m.title ASC")
+    return get_movies(where, params, order_sql="m.title ASC")
 
 def search_movie_studio(term: str):
     where = """
@@ -110,7 +112,7 @@ def search_movie_studio(term: str):
     )
     """
     params = (f"%{term}%",)
-    get_movies(where, params, order_sql="m.title ASC")
+    return get_movies(where, params, order_sql="m.title ASC")
 
 def search_movie_genre(term: str):
     where = """
@@ -122,7 +124,7 @@ def search_movie_genre(term: str):
     )
     """
     params = (f"%{term}%",)
-    get_movies(where, params, order_sql="m.title ASC")
+    return get_movies(where, params, order_sql="m.title ASC")
 
 def search_movie_length(term: str):
     term = term.strip()
@@ -136,7 +138,7 @@ def search_movie_length(term: str):
         where = "WHERE m.length <= %s"
         params = (max_len,)
         order = "m.length ASC, m.title ASC"
-    get_movies(where, params, order_sql=order)
+    return get_movies(where, params, order_sql=order)
 
 def search_movie_release(term: str):
     year = int(term.strip())
@@ -144,4 +146,43 @@ def search_movie_release(term: str):
     where = "WHERE m.release_year = %s"
     params = (year,)
 
-    get_movies(where, params, order_sql="m.title ASC")
+    return get_movies(where, params, order_sql="m.title ASC")
+
+def mark_movie_as_watched(username, movie_id):
+
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO user_watches_movie (username, movie_id, date)
+                VALUES (%s, %s, NOW());
+            """, (username, movie_id))
+            conn.commit()
+            print(f"{username} watched movie ID {movie_id}.")
+    except Exception as e:
+        print("Error marking movie as watched:", e)
+    finally:
+        conn.close()
+        server.stop()
+
+def movie_exists(movie_id):
+
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT 1
+                FROM movie
+                WHERE movie_id = %s;
+            """, (movie_id,))
+            result = cur.fetchone()
+            return result is not None
+    except Exception as e:
+        print("Error checking movie existence:", e)
+        return False
+    finally:
+        conn.close()
+        server.stop()
+
+
+
