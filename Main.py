@@ -133,6 +133,7 @@ def main_menu():
                     print("3. Add a movie to a playlist")
                     print("4. Remove movie from playlist")
                     print("5. Rename playlist")
+                    print("6. Delete playlist")
                     print("6. Watch a playlist")
                     print("7. Back")
                     pl_choice = input("Enter your choice: ").strip()
@@ -164,9 +165,9 @@ def main_menu():
                         playlist_id = input("Enter playlist ID: ").strip()
                         new_name = input("Enter new name: ").strip()
                         rename_playlist(playlist_id, new_name)
-
                     elif pl_choice == "6":
                         playlist_id = input("Enter playlist ID: ").strip()
+                        delete_playlist(playlist_id, current_user)
                         watch_playlist(playlist_id)
 
                     elif pl_choice == "7":

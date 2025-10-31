@@ -167,7 +167,7 @@ def search_movie_release(term: str):
     return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
 
 
-# ---------- SORTING FUNCTIONS ----------
+
 def sort_movies(order_by: str, ascending=True):
 
     global last_where, last_params
@@ -180,9 +180,15 @@ def sort_movies(order_by: str, ascending=True):
     if order_by == "title":
         order_sql = f"m.title {direction}, m.release_year {direction}"
     elif order_by == "studio":
-        order_sql = f"(SELECT s.name FROM studio_creates_movie scm JOIN studio s ON s.studio_id = scm.studio_id WHERE scm.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC"
+        order_sql = (f"(SELECT s.name "
+                     f"FROM studio_creates_movie scm "
+                     f"JOIN studio s ON s.studio_id = scm.studio_id "
+                     f"WHERE scm.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC")
     elif order_by == "genre":
-        order_sql = f"(SELECT g.name FROM movie_has_genre mg JOIN genre g ON g.genre_id = mg.genre_id WHERE mg.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC"
+        order_sql = (f"(SELECT g.name "
+                     f"FROM movie_has_genre mg "
+                     f"JOIN genre g ON g.genre_id = mg.genre_id "
+                     f"WHERE mg.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC")
     elif order_by == "year":
         order_sql = f"m.release_year {direction}, m.title ASC"
     else:
