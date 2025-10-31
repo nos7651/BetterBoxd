@@ -159,3 +159,42 @@ def rename_playlist(playlist_id, new_name):
     finally:
         conn.close()
         server.stop()
+
+def delete_playlist(playlist_id, username):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as curs:
+            curs.execute("""
+                SELECT 1 FROM user_creates_playlist
+                WHERE playlistid = %s AND username = %s;
+            """, (playlist_id, username))
+            owned = curs.fetchone()
+
+            if not owned:
+                print(f"Playlist {playlist_id} does not belong to user '{username}'.")
+                return
+
+            curs.execute("""
+                DELETE FROM playlist_contains_movie
+                WHERE playlist_id = %s;
+            """, (playlist_id,))
+
+            curs.execute("""
+                DELETE FROM user_creates_playlist
+                WHERE playlistid = %s;
+            """, (playlist_id,))
+
+            curs.execute("""
+                DELETE FROM playlist
+                WHERE playlist_id = %s;
+            """, (playlist_id,))
+
+            conn.commit()
+            print(f"Playlist {playlist_id} deleted successfully.")
+
+    except Exception as e:
+        print("Couldnt create playlist:", e)
+
+    finally:
+        conn.close()
+        server.stop()
