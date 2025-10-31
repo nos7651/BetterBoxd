@@ -169,10 +169,10 @@ def watch_playlist(playlist_id):
         with conn.cursor() as curs:
             curs.execute("""
                 UPDATE playlist_contains_movie
-                SET times_watched = times_watched + 1
+                SET times_watched = COALESCE(times_watched, 0) + 1
                 WHERE playlist_id = %s;
             """, (playlist_id,))
-
+        conn.commit()
         print("Playlist watched.")
 
     except Exception as e:

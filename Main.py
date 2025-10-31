@@ -56,7 +56,7 @@ def main_menu():
                         print("Invalid option.")
                         continue
 
-                    if result is not None:
+                    if result:
                         while True:
                             print("\n--- Search Results ---")
                             print("1. Choose a movie")
@@ -125,7 +125,7 @@ def main_menu():
                                 print("Invalid option.")
 
             elif choice == "2":
-                # --- PLAYLIST MENU ---
+
                 while True:
                     print("\n--- Playlist Menu ---")
                     print("1. Create playlist")
@@ -134,8 +134,8 @@ def main_menu():
                     print("4. Remove movie from playlist")
                     print("5. Rename playlist")
                     print("6. Delete playlist")
-                    print("6. Watch a playlist")
-                    print("7. Back")
+                    print("7. Watch a playlist")
+                    print("8. Back")
                     pl_choice = input("Enter your choice: ").strip()
 
                     if pl_choice == "1":
@@ -168,9 +168,11 @@ def main_menu():
                     elif pl_choice == "6":
                         playlist_id = input("Enter playlist ID: ").strip()
                         delete_playlist(playlist_id, current_user)
-                        watch_playlist(playlist_id)
 
                     elif pl_choice == "7":
+                        playlist_id = input("Enter playlist ID: ").strip()
+                        watch_playlist(playlist_id)
+                    elif pl_choice == "8":
                         break
                     else:
                         print("Invalid option.")
@@ -254,7 +256,7 @@ def main_menu():
                         print("Invalid option.")
                         continue
 
-                    if result is not None:
+                    if result:
                         while True:
                             print("\n--- Sort Options ---")
                             print("1. Sort by Name (Ascending)")

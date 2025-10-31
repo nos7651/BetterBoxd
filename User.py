@@ -71,6 +71,7 @@ def rate_movie(username, movie_id, star_rating):
                 INSERT INTO user_rates_movie (username, movie_id, star_rating)
                     VALUES (%s, %s, %s)
             """, (username, movie_id, str(star_rating)))
+            conn.commit()
     except Exception as e:
         print("Error during rating:", e)
 
