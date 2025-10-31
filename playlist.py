@@ -29,13 +29,14 @@ def view_playlists(username):
     conn, server = get_connection()
     try:
         with conn.cursor() as curs:
-            curs.execute("""
+            curs.execute(r"""
                 SELECT 
+                    p.playlist_id,
                     p.playlist_name AS collection_name,
                     COUNT(pcm.movie_id) AS movie_count,
                     COALESCE(
-                        FLOOR(SUM(m.length) / 60) ::text || ':' ||
-                        LPAD((SUM(m.length) %% 60)::text, 2, '0'),
+                        FLOOR(SUM(COALESCE(m.length, 0)) / 60)::text || ':' ||
+                        LPAD((SUM(COALESCE(m.length, 0)) %% 60)::text, 2, '0'),
                         '0:00'
                     ) AS total_length
                 FROM playlist p
@@ -43,7 +44,7 @@ def view_playlists(username):
                 LEFT JOIN playlist_contains_movie pcm ON p.playlist_id = pcm.playlist_id
                 LEFT JOIN movie m ON pcm.movie_id = m.movie_id
                 WHERE ucp.username = %s
-                GROUP BY p.playlist_name, p.playlist_id
+                GROUP BY p.playlist_id, p.playlist_name
                 ORDER BY p.playlist_name ASC;
             """, (username,))
 
@@ -54,8 +55,8 @@ def view_playlists(username):
                 return
 
             print(f"\nPlaylists for user '{username}':")
-            for name, count, total in rows:
-                print(f" {name:<25} | Movies: {count:<3} | Total: {total}")
+            for pid, name, count, total in rows:
+                print(f" ID: {pid:<4} | {name:<25} | Movies: {count:<3} | Total: {total}")
 
     except Exception as e:
         print("Couldnt get playlists:", e)
@@ -166,7 +167,7 @@ def delete_playlist(playlist_id, username):
         with conn.cursor() as curs:
             curs.execute("""
                 SELECT 1 FROM user_creates_playlist
-                WHERE playlistid = %s AND username = %s;
+                WHERE user_creates_playlist.playlist_id = %s AND username = %s;
             """, (playlist_id, username))
             owned = curs.fetchone()
 
@@ -181,7 +182,7 @@ def delete_playlist(playlist_id, username):
 
             curs.execute("""
                 DELETE FROM user_creates_playlist
-                WHERE playlistid = %s;
+                WHERE user_creates_playlist.playlist_id = %s;
             """, (playlist_id,))
 
             curs.execute("""
