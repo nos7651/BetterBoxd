@@ -5,7 +5,7 @@ from Follow import *
 
 def main_menu():
     current_user = None
-
+    print("--- Betterboxd ---")
     while True:
         if current_user:
             print(f"\nLogged in as: {current_user}")
@@ -22,11 +22,11 @@ def main_menu():
 
         choice = input("Enter your choice: ").strip()
 
-
         if current_user:
-            if choice == "1":
 
+            if choice == "1":
                 while True:
+                    print("\n--- Movie Search ---")
                     print("1. Search by title")
                     print("2. Search by cast")
                     print("3. Search by studio")
@@ -58,28 +58,30 @@ def main_menu():
 
                     if result is not None:
                         while True:
+                            print("\n--- Search Results ---")
                             print("1. Choose a movie")
                             print("2. Sort by Name (Ascending)")
                             print("3. Sort by Name (Descending)")
                             print("4. Sort by Studio (Ascending)")
-                            print("5. Sort by Genre (Ascending)")
-                            print("6. Sort by Year (Ascending)")
-                            print("7. Sort by Year (Descending)")
-                            print("8. Back")
-                            inp = input("Enter choice: ")
+                            print("5. Sort by Studio (Descending)")
+                            print("6. Sort by Genre (Ascending)")
+                            print("7. Sort by Genre (Descending)")
+                            print("8. Sort by Year (Ascending)")
+                            print("9. Sort by Year (Descending)")
+                            print("10. Back")
+                            inp = input("Enter choice: ").strip()
 
                             if inp == "1":
                                 selected_movie_id = input("Input movie ID: ").strip()
-
                                 if movie_exists(selected_movie_id):
-                                    print(f"Current chosen movie id:{selected_movie_id}")
+                                    print(f"Current chosen movie id: {selected_movie_id}")
                                     print("1. Rate")
                                     print("2. Mark as Watched")
                                     print("3. Add movie to playlist")
                                     print("4. Go back")
 
-                                    choice = input("Choose: ").strip()
-                                    if choice == "1":
+                                    action = input("Choose: ").strip()
+                                    if action == "1":
                                         rating = float(input("Enter rating 1 - 5 (intervals of .5): ").strip())
                                         if rating < 1 or rating > 5 or rating % .5 != 0:
                                             print("Invalid rating.")
@@ -87,22 +89,45 @@ def main_menu():
                                         rate_movie(current_user, selected_movie_id, rating)
                                         print(f"Rating entered: {rating} / 5")
 
-                                    elif choice == "2":
+                                    elif action == "2":
                                         mark_movie_as_watched(current_user, selected_movie_id)
                                         print("Movie marked as watched")
-                                    elif choice == "3":
+                                    elif action == "3":
                                         playlist_id = int(input("Enter playlist id: ").strip())
                                         add_movie_to_playlist(current_user, playlist_id, selected_movie_id)
                                         print(f"Added movie to playlist: {selected_movie_id}")
+                                    elif action == "4":
+                                        continue
+                                    else:
+                                        print("Invalid option.")
                                 else:
-                                    print("Movie with chosen ID doesn't exist")
+                                    print("Movie with chosen ID doesn't exist.")
 
+                            elif inp == "2":
+                                sort_movies("title", True)
+                            elif inp == "3":
+                                sort_movies("title", False)
+                            elif inp == "4":
+                                sort_movies("studio", True)
+                            elif inp == "5":
+                                sort_movies("studio", False)
+                            elif inp == "6":
+                                sort_movies("genre", True)
+                            elif inp == "7":
+                                sort_movies("genre", False)
+                            elif inp == "8":
+                                sort_movies("year", True)
+                            elif inp == "9":
+                                sort_movies("year", False)
+                            elif inp == "10":
+                                break
                             else:
                                 print("Invalid option.")
 
             elif choice == "2":
+                # --- PLAYLIST MENU ---
                 while True:
-
+                    print("\n--- Playlist Menu ---")
                     print("1. Create playlist")
                     print("2. View my playlists")
                     print("3. Add a movie to a playlist")
@@ -127,35 +152,17 @@ def main_menu():
                         if not playlist_id or not movie_id:
                             print("Both playlist ID and movie ID are required.")
                             continue
-                        try:
-                            add_movie_to_playlist(current_user, playlist_id, movie_id)
-                            print(f"Added movie {movie_id} to playlist {playlist_id}.")
-                        except Exception as e:
-                            print("Could not add to playlist:", e)
+                        add_movie_to_playlist(current_user, playlist_id, movie_id)
 
                     elif pl_choice == "4":
                         playlist_id = input("Enter playlist ID: ").strip()
                         movie_id = input("Enter movie ID to remove: ").strip()
-                        if not playlist_id or not movie_id:
-                            print("Both playlist ID and movie ID are required.")
-                            continue
-                        try:
-                            remove_movie_from_playlist(playlist_id, movie_id)
-                            print(f"Removed movie {movie_id} from playlist {playlist_id}.")
-                        except Exception as e:
-                            print("Could not remove from playlist:", e)
+                        remove_movie_from_playlist(playlist_id, movie_id)
 
                     elif pl_choice == "5":
                         playlist_id = input("Enter playlist ID: ").strip()
                         new_name = input("Enter new name: ").strip()
-                        if not playlist_id or not new_name:
-                            print("Both playlist ID and new name are required.")
-                            continue
-                        try:
-                            rename_playlist(playlist_id, new_name)
-                            print(f"Renamed playlist {playlist_id} to '{new_name}'.")
-                        except Exception as e:
-                            print("Could not rename playlist:", e)
+                        rename_playlist(playlist_id, new_name)
 
                     elif pl_choice == "6":
                         break
@@ -163,8 +170,9 @@ def main_menu():
                         print("Invalid option.")
 
             elif choice == "3":
-                while True:
 
+                while True:
+                    print("\n--- User Search ---")
                     print("1. Search for user by email")
                     print("2. Back")
                     fu_choice = input("Enter choice: ").strip()
@@ -175,7 +183,6 @@ def main_menu():
                         if not username:
                             continue
 
-                        # Decide whether to follow or unfollow
                         if not is_following(current_user, username):
                             print(f"\nUser found: {username}")
                             print("1. Follow user")
@@ -183,10 +190,6 @@ def main_menu():
                             act = input("Enter choice: ").strip()
                             if act == "1":
                                 follow_user(current_user, username)
-                            elif act == "2":
-                                continue
-                            else:
-                                print("Invalid option.")
                         else:
                             print(f"\nUser found: {username}")
                             print("1. Unfollow user")
@@ -194,10 +197,6 @@ def main_menu():
                             act = input("Enter choice: ").strip()
                             if act == "1":
                                 unfollow_user(current_user, username)
-                            elif act == "2":
-                                continue
-                            else:
-                                print("Invalid option.")
 
                     elif fu_choice == "2":
                         break
@@ -218,9 +217,8 @@ def main_menu():
 
         else:
             if choice == "1":
-                # Allow searching even when logged out (actions gated by login)
                 while True:
-
+                    print("\n--- Movie Search (Guest) ---")
                     print("1. Search by title")
                     print("2. Search by cast")
                     print("3. Search by studio")
@@ -231,25 +229,59 @@ def main_menu():
 
                     if search_choice == "1":
                         term = input("Enter title: ").strip()
-                        search_movie_title(term)
+                        result = search_movie_title(term)
                     elif search_choice == "2":
                         term = input("Enter cast/crew name: ").strip()
-                        search_movie_cast(term)
+                        result = search_movie_cast(term)
                     elif search_choice == "3":
                         term = input("Enter studio name: ").strip()
-                        search_movie_studio(term)
+                        result = search_movie_studio(term)
                     elif search_choice == "4":
                         term = input("Enter genre: ").strip()
-                        search_movie_genre(term)
+                        result = search_movie_genre(term)
                     elif search_choice == "5":
                         year = input("Enter release year (e.g., 2019): ").strip()
-                        search_movie_release(year)
+                        result = search_movie_release(year)
                     elif search_choice == "6":
                         break
                     else:
                         print("Invalid option.")
                         continue
 
+                    if result is not None:
+                        while True:
+                            print("\n--- Sort Options ---")
+                            print("1. Sort by Name (Ascending)")
+                            print("2. Sort by Name (Descending)")
+                            print("3. Sort by Studio (Ascending)")
+                            print("4. Sort by Studio (Descending)")
+                            print("5. Sort by Genre (Ascending)")
+                            print("6. Sort by Genre (Descending)")
+                            print("7. Sort by Year (Ascending)")
+                            print("8. Sort by Year (Descending)")
+                            print("9. Back")
+                            inp = input("Enter choice: ").strip()
+
+                            if inp == "1":
+                                sort_movies("title", True)
+                            elif inp == "2":
+                                sort_movies("title", False)
+                            elif inp == "3":
+                                sort_movies("studio", True)
+                            elif inp == "4":
+                                sort_movies("studio", False)
+                            elif inp == "5":
+                                sort_movies("genre", True)
+                            elif inp == "6":
+                                sort_movies("genre", False)
+                            elif inp == "7":
+                                sort_movies("year", True)
+                            elif inp == "8":
+                                sort_movies("year", False)
+                            elif inp == "9":
+                                break
+                            else:
+                                print("Invalid option.")
                     print("(Log in to rate or add movies to playlists.)")
 
             elif choice == "2":

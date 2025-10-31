@@ -1,5 +1,9 @@
 from db import get_connection
 
+# globals to remember the last search
+last_where = None
+last_params = None
+
 
 def print_movies(rows):
     if not rows:
@@ -18,12 +22,10 @@ def print_movies(rows):
             f"  Length: {h}h {m}m\n"
             f"  Ratings: MPAA={mpaa or 'N/A'}, User(avg)={user_str}\n"
         )
-
     return 1
 
 
 def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
-    
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
@@ -69,22 +71,27 @@ def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
                 params,
             )
             rows = cur.fetchall()
-            return print_movies(rows)
+            print_movies(rows)
+            return rows
     except Exception as e:
         print("Error fetching movies:", e)
+        return []
     finally:
         conn.close()
         server.stop()
 
 
-
+# ---------- SEARCH FUNCTIONS ----------
 def search_movie_title(term: str):
+    global last_where, last_params
     where = "WHERE LOWER(m.title) LIKE LOWER(%s)"
     params = (f"%{term}%",)
-    return get_movies(where, params, order_sql="m.title ASC")
+    last_where, last_params = where, params
+    return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
+
 
 def search_movie_cast(term: str):
-
+    global last_where, last_params
     where = """
     WHERE EXISTS (
         SELECT 1
@@ -100,9 +107,12 @@ def search_movie_cast(term: str):
     )
     """
     params = (f"%{term}%", f"%{term}%")
-    return get_movies(where, params, order_sql="m.title ASC")
+    last_where, last_params = where, params
+    return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
+
 
 def search_movie_studio(term: str):
+    global last_where, last_params
     where = """
     WHERE EXISTS (
         SELECT 1
@@ -112,9 +122,12 @@ def search_movie_studio(term: str):
     )
     """
     params = (f"%{term}%",)
-    return get_movies(where, params, order_sql="m.title ASC")
+    last_where, last_params = where, params
+    return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
+
 
 def search_movie_genre(term: str):
+    global last_where, last_params
     where = """
     WHERE EXISTS (
         SELECT 1
@@ -124,9 +137,12 @@ def search_movie_genre(term: str):
     )
     """
     params = (f"%{term}%",)
-    return get_movies(where, params, order_sql="m.title ASC")
+    last_where, last_params = where, params
+    return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
+
 
 def search_movie_length(term: str):
+    global last_where, last_params
     term = term.strip()
     if "-" in term:
         lo, hi = [int(x.strip()) for x in term.split("-", 1)]
@@ -138,18 +154,45 @@ def search_movie_length(term: str):
         where = "WHERE m.length <= %s"
         params = (max_len,)
         order = "m.length ASC, m.title ASC"
+    last_where, last_params = where, params
     return get_movies(where, params, order_sql=order)
 
-def search_movie_release(term: str):
-    year = int(term.strip())
 
+def search_movie_release(term: str):
+    global last_where, last_params
+    year = int(term.strip())
     where = "WHERE m.release_year = %s"
     params = (year,)
+    last_where, last_params = where, params
+    return get_movies(where, params, order_sql="m.title ASC, m.release_year ASC")
 
-    return get_movies(where, params, order_sql="m.title ASC")
+
+# ---------- SORTING FUNCTIONS ----------
+def sort_movies(order_by: str, ascending=True):
+
+    global last_where, last_params
+    if not last_where or not last_params:
+        print("No previous search found to sort.")
+        return []
+
+    direction = "ASC" if ascending else "DESC"
+
+    if order_by == "title":
+        order_sql = f"m.title {direction}, m.release_year {direction}"
+    elif order_by == "studio":
+        order_sql = f"(SELECT s.name FROM studio_creates_movie scm JOIN studio s ON s.studio_id = scm.studio_id WHERE scm.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC"
+    elif order_by == "genre":
+        order_sql = f"(SELECT g.name FROM movie_has_genre mg JOIN genre g ON g.genre_id = mg.genre_id WHERE mg.movie_id = m.movie_id LIMIT 1) {direction}, m.title ASC"
+    elif order_by == "year":
+        order_sql = f"m.release_year {direction}, m.title ASC"
+    else:
+        print("Invalid sort option.")
+        return []
+
+    return get_movies(last_where, last_params, order_sql=order_sql)
+
 
 def mark_movie_as_watched(username, movie_id):
-
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
@@ -165,16 +208,12 @@ def mark_movie_as_watched(username, movie_id):
         conn.close()
         server.stop()
 
-def movie_exists(movie_id):
 
+def movie_exists(movie_id):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT 1
-                FROM movie
-                WHERE movie_id = %s;
-            """, (movie_id,))
+            cur.execute("SELECT 1 FROM movie WHERE movie_id = %s;", (movie_id,))
             result = cur.fetchone()
             return result is not None
     except Exception as e:
@@ -183,6 +222,3 @@ def movie_exists(movie_id):
     finally:
         conn.close()
         server.stop()
-
-
-
