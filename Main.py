@@ -2,6 +2,8 @@ from user import *
 from movies import *
 from playlist import *
 from follow import *
+from profile import get_user_profile
+
 
 def main_menu():
     current_user = None
@@ -9,11 +11,12 @@ def main_menu():
     while True:
         if current_user:
             print(f"\nLogged in as: {current_user}")
-            print("1. Search for movies")
-            print("2. Playlists")
-            print("3. Search for users (follow/unfollow)")
-            print("4. Logout")
-            print("5. Exit")
+            print("1. View profile")
+            print("2. Search for movies")
+            print("3. Playlists")
+            print("4. Search for users (follow/unfollow)")
+            print("5. Logout")
+            print("6. Exit")
         else:
             print("1. Search for movies")
             print("2. Login")
@@ -23,8 +26,10 @@ def main_menu():
         choice = input("Enter your choice: ").strip()
 
         if current_user:
-
             if choice == "1":
+                get_user_profile(current_user)
+
+            elif choice == "2":
                 while True:
                     print("\n--- Movie Search ---")
                     print("1. Search by title")
@@ -124,7 +129,7 @@ def main_menu():
                             else:
                                 print("Invalid option.")
 
-            elif choice == "2":
+            elif choice == "3":
 
                 while True:
                     print("\n--- Playlist Menu ---")
@@ -177,7 +182,7 @@ def main_menu():
                     else:
                         print("Invalid option.")
 
-            elif choice == "3":
+            elif choice == "4":
 
                 while True:
                     print("\n--- User Search ---")
@@ -211,11 +216,11 @@ def main_menu():
                     else:
                         print("Invalid option.")
 
-            elif choice == "4":
+            elif choice == "5":
                 print(f"Logged out {current_user}.")
                 current_user = None
 
-            elif choice == "5":
+            elif choice == "6":
                 print("Goodbye.")
                 break
 
