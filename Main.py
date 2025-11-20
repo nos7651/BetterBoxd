@@ -1,7 +1,7 @@
-from User import *
-from Movies import *
+from user import *
+from movies import *
 from playlist import *
-from Follow import *
+from follow import *
 
 def main_menu():
     current_user = None
