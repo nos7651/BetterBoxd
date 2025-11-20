@@ -54,13 +54,14 @@ def view_trends(username):
             print("1. View 20 most popular movies in the last 90 days")
             print("2. View top 20 most popular movies among your following")
             print("3. Find the top 5 new releases of the month!")
+            print("4. Exit")
 
             response = input("Choose an option!: ").strip()
             if response == "1":
                 print("\n--- TOP 20: Last 90 Days ---")
                 for movie_id, title, count in top_twenty_last_ninety:
                     print(f"{movie_id}: {title} - {count} plays")
-                persist = False
+                
 
             elif response == "2":
                 print("\n--- TOP 20: Your Following Watched")
@@ -70,13 +71,16 @@ def view_trends(username):
                 else:
                     for movie_id, title, count in top_twenty_of_following:
                         print(f"{movie_id}: {title} - {count} plays")
-                persist = False
+
 
             elif response == "3":
                 print("\n--- TOP 5 New Releases this Month! ---")
                 for movie_id, title, count in top_five_this_month:
                     print(f"{movie_id}: {title} - {count} plays")
+
+            elif response == "4":
                 persist = False
+
             else:
                 print("\nInvalid response!  Please say either 1, 2, or 3.")
     
