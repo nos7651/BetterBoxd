@@ -50,7 +50,7 @@ def get_user_profile(username):
             print("  No rated movies yet.")
         else:
             for title, rating in top_movies:
-                print(f"  {title}  — {rating}")
+                print(f"  {title}  — {rating} stars")
 
     except Exception as e:
         print("Error fetching profile:", e)
