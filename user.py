@@ -38,11 +38,11 @@ def login(username, password):
                 print("No such user found.")
                 return False
 
-            stored_pass_hash = result[0].password.encode('utf-8')
+            #stored_pass_hash = result[0].password.encode('utf-8')
 
 
 
-            if bcrypt.checkpw(password.encode(), stored_pass_hash):
+            #if bcrypt.checkpw(password.encode(), stored_pass_hash):
                 print("Incorrect password.")
                 return False
 
