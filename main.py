@@ -2,8 +2,8 @@ from user import *
 from movies import *
 from playlist import *
 from follow import *
-from profile import get_user_profile
-from trends import view_trends
+from profile import *
+from trends import *
 
 def main_menu():
     current_user = None
@@ -29,7 +29,23 @@ def main_menu():
 
         if current_user:
             if choice == "1":
-                get_user_profile(current_user)
+                get_user_profile_rating(current_user)
+                while True:
+                    print("1. Sort Top 10 by Rating")
+                    print("2. Sort Top 10 by Most Watched")
+                    print("3. Sort Top 10 by Rating + Most Watched")
+                    print("4. Back")
+                    choice = input("Enter choice: ").strip()
+                    if choice == "1":
+                        get_user_profile_rating(current_user)
+                    elif choice == "2":
+                        get_user_profile_watched(current_user)
+                    elif choice == "3":
+                        get_user_profile_mix(current_user)
+                    elif choice == "4":
+                        break
+                    else:
+                        print("Invalid option.")
 
             elif choice == "2":
                 while True:
