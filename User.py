@@ -1,16 +1,20 @@
 from db import get_connection
+import bcrypt
 
 def create_user(username, password, email, first_name, last_name ):
     if len(username) > 50 or len(first_name) > 50 or len(last_name) > 50:
         print("Error: Username cannot be longer than 50 characters.")
         return
     conn, server = get_connection()
+
+    pass_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+
     try:
         with conn.cursor() as cur:
             cur.execute("""
                     INSERT INTO app_user (username, password, email, first_name, last_name, creation_date, last_access_ts)
                     VALUES (%s, %s, %s, %s, %s, NOW(), NOW());
-                    """, (username, password, email, first_name, last_name))
+                    """, (username, pass_hash, email, first_name, last_name))
             conn.commit()
             print("User created successfully!")
     except Exception as e:
@@ -34,10 +38,11 @@ def login(username, password):
                 print("No such user found.")
                 return False
 
-            stored_password = result[0]
+            stored_pass_hash = result[0].password.encode('utf-8')
 
 
-            if stored_password != password:
+
+            if bcrypt.checkpw(password.encode(), stored_pass_hash):
                 print("Incorrect password.")
                 return False
 
