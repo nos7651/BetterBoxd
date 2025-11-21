@@ -1,7 +1,7 @@
-from user import *
-from movies import *
+from User import *
+from Movies import *
 from playlist import *
-from follow import *
+from Follow import *
 from profile import get_user_profile
 from trends import view_trends
 
@@ -16,8 +16,9 @@ def main_menu():
             print("3. Playlists")
             print("4. Search for users (follow/unfollow)")
             print("5. View current trends")
-            print("6. Logout")
-            print("7. Exit")
+            print("6. Get recommendations")
+            print("7. Logout")
+            print("8. Exit")
         else:
             print("1. Search for movies")
             print("2. Login")
@@ -221,12 +222,18 @@ def main_menu():
             elif choice == "5":
                 view_trends(current_user)
 
-
             elif choice == "6":
+                limit = input("How many movies would you like to see: ")
+                recs = get_reccomendations(current_user, limit)
+                print("Based on your highest-rated genres, you might like:\n")
+                for movie_id, title in recs:
+                    print(f"{movie_id}: {title}")
+
+            elif choice == "7":
                 print(f"Logged out {current_user}.")
                 current_user = None
 
-            elif choice == "7":
+            elif choice == "8":
                 print("Goodbye.")
                 break
 

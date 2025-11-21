@@ -228,3 +228,47 @@ def movie_exists(movie_id):
     finally:
         conn.close()
         server.stop()
+
+def get_reccomendations(username, limit):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("""
+                WITH my_ratings AS (
+                    SELECT movie_id, star_rating
+                    FROM user_rates_movie 
+                    WHERE username = %s
+                ),
+                fav_genres AS (
+                    SELECT mhg.genre_id 
+                    FROM my_ratings r 
+                    JOIN movie_has_genre mhg
+                        ON r.movie_id = mhg.movie_id 
+                    WHERE r.star_rating >= 4.0 
+                    GROUP BY mhg.genre_id
+                ),
+                unwatched_in_fav_genres AS (
+                    SELECT DISTINCT m.movie_id, m.title 
+                    FROM movie m
+                    JOIN movie_has_genre mhg
+                        ON m.movie_id = mhg.movie_id
+                    WHERE mhg.genre_id IN (SELECT genre_id FROM fav_genres)
+                        AND m.movie_id NOT IN (
+                            SELECT movie_id
+                            FROM user_watches_movie 
+                            WHERE username = %s
+                        )
+                )
+                SELECT movie_id, title
+                FROM unwatched_in_fav_genres
+                ORDER BY RANDOM()
+                LIMIT %s;
+            """, (username, username, limit))
+            return cur.fetchall()
+
+    except Exception as e:
+        print("Error getting reccomendations:", e)
+        return []
+    finally:
+        conn.close()
+        server.stop()
