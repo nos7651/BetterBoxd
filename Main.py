@@ -1,7 +1,7 @@
-from User import *
-from Movies import *
+from user import *
+from movies import *
 from playlist import *
-from Follow import *
+from follow import *
 from profile import get_user_profile
 from trends import view_trends
 
