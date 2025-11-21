@@ -1,20 +1,22 @@
 from db import get_connection
 import bcrypt
 
-def create_user(username, password, email, first_name, last_name ):
+
+def create_user(username, password, email, first_name, last_name):
     if len(username) > 50 or len(first_name) > 50 or len(last_name) > 50:
         print("Error: Username cannot be longer than 50 characters.")
         return
     conn, server = get_connection()
 
     pass_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    pass_hash_str = pass_hash.decode('utf-8')
 
     try:
         with conn.cursor() as cur:
             cur.execute("""
                     INSERT INTO app_user (username, password, email, first_name, last_name, creation_date, last_access_ts)
                     VALUES (%s, %s, %s, %s, %s, NOW(), NOW());
-                    """, (username, pass_hash, email, first_name, last_name))
+                    """, (username, pass_hash_str, email, first_name, last_name))
             conn.commit()
             print("User created successfully!")
     except Exception as e:
@@ -26,7 +28,6 @@ def create_user(username, password, email, first_name, last_name ):
 
 
 def login(username, password):
-
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
@@ -38,14 +39,11 @@ def login(username, password):
                 print("No such user found.")
                 return False
 
-            #stored_pass_hash = result[0].password.encode('utf-8')
+            stored_pass_hash = result[0].encode('utf-8')
 
-
-
-            #if bcrypt.checkpw(password.encode(), stored_pass_hash):
+            if not bcrypt.checkpw(password.encode(), stored_pass_hash):
                 print("Incorrect password.")
                 return False
-
 
             cur.execute("""
                 UPDATE app_user
@@ -68,6 +66,7 @@ def login(username, password):
         server.stop()
         print("connection closed")
 
+
 def rate_movie(username, movie_id, star_rating):
     conn, server = get_connection()
     try:
@@ -82,7 +81,7 @@ def rate_movie(username, movie_id, star_rating):
 
     except KeyboardInterrupt:
         print("User interrupted.")
-        
+
     finally:
         conn.close()
         server.stop()
