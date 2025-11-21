@@ -18,14 +18,14 @@ def get_user_profile(username):
                         FROM user_follows_user
                         WHERE followed_username = %s;
 
-                        """, (username))   
-            follower_count = cur.fetchone()[0]   
+                        """, (username,))
+            follower_count = cur.fetchone()[0]
             #number of people you're following
             cur.execute("""
                 SELECT COUNT(*)
                     FROM user_follows_user
                     WHERE follower_username = %s;
-                    """, (username))      
+                    """, (username,))      
             following_count = cur.fetchone()[0]
             #top 10 movies by rating
             cur.execute("""
