@@ -81,7 +81,7 @@ def get_movies(where_sql: str, params: tuple, order_sql: str = "m.title ASC"):
         server.stop()
 
 
-# ---------- SEARCH FUNCTIONS ----------
+
 def search_movie_title(term: str):
     global last_where, last_params
     where = "WHERE LOWER(m.title) LIKE LOWER(%s)"
@@ -104,7 +104,7 @@ def search_movie_cast(term: str):
         FROM contributor_directs_movie cdm
         JOIN contributor c2 ON c2.con_id = cdm.con_id
         WHERE cdm.mov_id = m.movie_id AND LOWER(c2.name) LIKE LOWER(%s)
-    )
+    )x
     """
     params = (f"%{term}%", f"%{term}%")
     last_where, last_params = where, params

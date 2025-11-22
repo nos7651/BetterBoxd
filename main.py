@@ -241,7 +241,7 @@ def main_menu():
             elif choice == "6":
                 limit = input("How many movies would you like to see: ")
                 recs = get_reccomendations(current_user, limit)
-                print("Based on your highest-rated genres, you might like:\n")
+                print("Based on your play history, you might like:\n")
                 for movie_id, title in recs:
                     print(f"{movie_id}: {title}")
 

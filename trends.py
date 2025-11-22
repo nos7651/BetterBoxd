@@ -40,11 +40,16 @@ def view_trends(username):
 
             #top 5 new releases of the current year
             cur.execute("""
-                SELECT movie_id, title, release_year
-                FROM movie
-                WHERE release_year = EXTRACT(YEAR FROM NOW())
-                ORDER BY release_year DESC, title ASC
-                LIMIT 5;
+                SELECT
+                m.movie_id,
+                m.title,
+                COUNT(uwm.movie_id) AS watch_count
+            FROM user_watches_movie uwm
+            JOIN movie m ON m.movie_id = uwm.movie_id
+            WHERE uwm.date >= DATE_TRUNC('year', CURRENT_DATE)
+            GROUP BY m.movie_id
+            ORDER BY watch_count DESC
+            LIMIT 5;
             """)    
             top_five_this_month = cur.fetchall()
             persist = True
