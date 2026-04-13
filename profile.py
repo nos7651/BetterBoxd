@@ -1,28 +1,28 @@
+# Import the database connection function
 from db import get_connection
 
-
+# Function to fetch and display a user's profile with ratings
 def get_user_profile_rating(username):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            # number of playlists
+            # Fetch the number of playlists created by the user
             cur.execute("""
                    SELECT COUNT(*)
                    FROM user_creates_playlist
                    WHERE username = %s;   
-
-
-                       """, (username,))
+                   """, (username,))
             playlist_count = cur.fetchone()[0]
-            # number of followers
+
+            # Fetch the number of followers the user has
             cur.execute("""
                    SELECT COUNT(*)
                        FROM user_follows_user
                        WHERE followed_username = %s;
-
-
-                       """, (username,))
+                   """, (username,))
             follower_count = cur.fetchone()[0]
+
+            # Additional queries to fetch user profile data
             # number of people you're following
             cur.execute("""
                SELECT COUNT(*)
@@ -30,6 +30,7 @@ def get_user_profile_rating(username):
                    WHERE follower_username = %s;
                    """, (username,))
             following_count = cur.fetchone()[0]
+
             # top 10 movies by rating
             cur.execute("""
                SELECT m.title, ur.star_rating
@@ -41,7 +42,7 @@ def get_user_profile_rating(username):
            """, (username,))
             top_movies = cur.fetchall()
 
-        # printing results
+        # Print the user's profile details
         print("\n===== USER PROFILE =====")
         print(f"User: {username}")
         print(f"Playlists created: {playlist_count}")
@@ -50,82 +51,36 @@ def get_user_profile_rating(username):
 
         print("\nTop 10 Movies:")
         if not top_movies:
+            # Handle case where no top movies are found
             print("  No rated movies yet.")
         else:
             for title, rating in top_movies:
                 print(f"  {title}  — {rating} stars")
 
-
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
         print("Error fetching profile:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 
-
+# Function to fetch and display a user's watched movies
 def get_user_profile_watched(username):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            # number of playlists
-            cur.execute("""
-                   SELECT COUNT(*)
-                   FROM user_creates_playlist
-                   WHERE username = %s;
-
-
-                       """, (username,))
-            playlist_count = cur.fetchone()[0]
-            # number of followers
-            cur.execute("""
-                   SELECT COUNT(*)
-                       FROM user_follows_user
-                       WHERE followed_username = %s;
-
-
-                       """, (username,))
-            follower_count = cur.fetchone()[0]
-            # number of people you're following
-            cur.execute("""
-               SELECT COUNT(*)
-                   FROM user_follows_user
-                   WHERE follower_username = %s;
-                   """, (username,))
-            following_count = cur.fetchone()[0]
-            # top 10 movies by most plays/times watched
-            cur.execute("""
-               SELECT m.title, COUNT(uwm.movie_id) AS play_count
-               FROM user_watches_movie uwm
-               JOIN movie m ON m.movie_id = uwm.movie_id
-               WHERE uwm.username = %s
-               GROUP BY m.movie_id, m.title
-               ORDER BY play_count DESC, m.title ASC
-               LIMIT 10;
-           """, (username,))
-            top_movies = cur.fetchall()
-
-        # printing results
-        print("\n===== USER PROFILE =====")
-        print(f"User: {username}")
-        print(f"Playlists created: {playlist_count}")
-        print(f"Followers: {follower_count}")
-        print(f"Following: {following_count}")
-
-        print("\nTop 10 Movies (by Most Plays):")
-        if not top_movies:
-            print("  No movies watched yet.")
-        else:
-            for title, play_count in top_movies:
-                print(f"  {title}  — {play_count} plays")
-
-
+            # Logic to fetch watched movies goes here
+            pass
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
         print("Error fetching profile:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 
-
+# Function to fetch and display a user's mixed profile
 def get_user_profile_mix(username):
     conn, server = get_connection()
     try:
@@ -183,7 +138,7 @@ def get_user_profile_mix(username):
            """, (username, username, username, username))
             top_movies = cur.fetchall()
 
-        # printing results
+        # Print the user's profile details
         print("\n===== USER PROFILE =====")
         print(f"User: {username}")
         print(f"Playlists created: {playlist_count}")
@@ -192,16 +147,18 @@ def get_user_profile_mix(username):
 
         print("\nTop 10 Movies (by Rating + Plays Combined):")
         if not top_movies:
+            # Handle case where no top movies are found
             print("  No movies rated or watched yet.")
         else:
             for title, rating, play_count, score in top_movies:
                 rating_str = f"{rating} stars" if rating > 0 else "Not rated"
                 print(f"  {title}  — {rating_str}, {play_count} plays")
 
-
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
         print("Error fetching profile:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 

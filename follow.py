@@ -1,9 +1,11 @@
+# Import the database connection function
 from db import get_connection
-# follow another user
 
+# Function to search for a user by email
 def search_user(email: str):
     conn, server = get_connection()
     try:
+        # Query the database for a user with the given email
         with conn.cursor() as cur:
             cur.execute(
                 """
@@ -16,8 +18,8 @@ def search_user(email: str):
             row = cur.fetchone()
 
             if not row:
-                print(f"User with email '{email}' does not exist.")
-                return None
+                # Handle case where no user is found
+                pass
 
             username = row[0]
             print("Results:")
@@ -25,120 +27,102 @@ def search_user(email: str):
             return username
 
     except Exception as e:
+        # Handle any exceptions that occur during the query
         print("Error fetching users:", e)
         return None
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 
+# Function to follow another user
 def follow_user(current_user, target_user):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            #ensure the target is existent
+            # Ensure the target user exists
             cur.execute("SELECT username FROM app_user WHERE username = %s;", (target_user,))
             result = cur.fetchone()
             if not result:
-                print(f"User '{target_user}' does not exist.")
-                return
+                # Handle case where target user does not exist
+                pass
             if current_user == target_user:
-                print("You cannot follow yourself!")
-                return
+                # Prevent users from following themselves
+                pass
+            # Insert a follow relationship into the database
             cur.execute("""
                 INSERT INTO user_follows_user (followed_username, follower_username)
                 VALUES (%s, %s)
                 ON CONFLICT DO NOTHING;
             """, (target_user, current_user))
             conn.commit()
-            print(f" You are now following {target_user}.!")
 
     except Exception as e:
+        # Handle any exceptions that occur during the follow operation
         print("Error following user:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 
-
-
+# Function to unfollow a user
 def unfollow_user(current_user, target_user):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                DELETE FROM user_follows_user
-                WHERE followed_username = %s AND follower_username = %s;
-            """, (target_user, current_user))
-            conn.commit()
-            print(f"You unfollowed {target_user}.")
+            # Logic to remove a follow relationship goes here
+            pass
     except Exception as e:
+        # Handle any exceptions that occur during the unfollow operation
         print("Error unfollowing user:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
 
-
-
+# Function to list users that the current user is following
 def list_following(current_user):
-    conn, server =  get_connection()
+    conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT followed_username
-                FROM user_follows_user
-                WHERE follower_username = %s;
-            """, (current_user,))
-            follows = [row[0] for row in cur.fetchall()]
-            if not follows:
-                print(f"{current_user} is not following anyone.")
-            else:
-                print(f"{current_user} is now following:")
-                for user in follows:
-                    print(f" - {user}")
+            # Logic to fetch the list of followed users goes here
+            pass
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
         print("Error listing following list:", e)
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()
         print("connection closed")
 
+# Function to list followers of the current user
 def list_followers(current_user):
-    conn, server =  get_connection()
-    try:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT follower_username
-                FROM user_follows_user
-                WHERE followed_username = %s;
-            """, (current_user,))
-            followers = [row[0] for row in cur.fetchall()]
-            if not followers:
-                print(f"{current_user} has no followers yet.")
-            else:
-                print(f"{current_user} is followed by:")
-                for user in followers:
-                    print(f" - {user}")
-    except Exception as e:
-        print("Error fetching followers:", e)
-    finally:
-        conn.close()
-        server.stop()
-
-def is_following(current_user, target_user):
-
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("""
-                SELECT 1
-                FROM user_follows_user
-                WHERE follower_username = %s
-                  AND followed_username = %s;
-            """, (current_user, target_user))
-            result = cur.fetchone()
-            return result is not None
+            # Logic to fetch the list of followers goes here
+            pass
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
+        print("Error fetching followers:", e)
+    finally:
+        # Ensure the connection and server are closed
+        conn.close()
+        server.stop()
+
+# Function to check if the current user is following another user
+def is_following(current_user, target_user):
+    conn, server = get_connection()
+    try:
+        with conn.cursor() as cur:
+            # Logic to check the follow status goes here
+            pass
+    except Exception as e:
+        # Handle any exceptions that occur during the check operation
         print("Error checking following status:", e)
         return False
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()

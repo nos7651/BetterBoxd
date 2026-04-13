@@ -1,13 +1,16 @@
+# Import necessary libraries for database connection and SSH tunneling
 import psycopg
 from sshtunnel import SSHTunnelForwarder
 
+# Function to establish a connection to the database through an SSH tunnel
 def get_connection():
     try:
-        username = "don5082"
-        password = "C3nt3rfi3ldb8sball3r"
-        dbname = "p320_41"
+        # Database and SSH credentials
+        username = "xxx"  #This part of the code will be the breaking point as the database isn't connected anymore.
+        password = "xxx"
+        dbname = "xxx"
 
-        #print("Starting tunnel...")
+        # Establish an SSH tunnel to the remote server
         server = SSHTunnelForwarder(
             ('starbug.cs.rit.edu', 22),
             ssh_username=username,
@@ -15,9 +18,8 @@ def get_connection():
             remote_bind_address=('127.0.0.1', 5432)
         )
         server.start()
-        #print("SSH tunnel established!")
 
-        #print(f"Connecting to database {dbname} on port {server.local_bind_port}...")
+        # Connect to the database using the SSH tunnel
         conn = psycopg.connect(
             dbname=dbname,
             user=username,
@@ -25,18 +27,18 @@ def get_connection():
             host='localhost',
             port=server.local_bind_port
         )
-        #print("Database connection successful.")
         return conn, server
     except Exception as e:
+        # Handle any exceptions that occur during the connection process
         print("Error connecting to database:", e)
 
     except KeyboardInterrupt:
-        #print("User interrupted.")
+        # Handle user interruption
         conn.close()
         server.stop()
 
+# Main block to test the database connection
 if __name__ == "__main__":
     conn, server = get_connection()
-    #print("Connection successful!")
     conn.close()
     server.stop()

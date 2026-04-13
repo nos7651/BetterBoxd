@@ -1,11 +1,12 @@
+# Import the database connection function
 from db import get_connection
 
-
+# Function to view trending movies based on different criteria
 def view_trends(username):
     conn, server = get_connection()
     try:
         with conn.cursor() as cur:
-            #find top 20 most popular movies in last 90 days
+            # Query to find the top 20 most popular movies in the last 90 days
             cur.execute("""
             SELECT
                 m.movie_id,
@@ -19,7 +20,8 @@ def view_trends(username):
             LIMIT 20;
             """)
             top_twenty_last_ninety = cur.fetchall()
-            #top 20 most popular movies among the users the current uesr follows
+
+            # Query to find the top 20 most popular movies among the users the current user follows
             cur.execute("""
                 SELECT
                     m.movie_id,
@@ -38,7 +40,7 @@ def view_trends(username):
                 """, (username,))
             top_twenty_of_following = cur.fetchall()
 
-            #top 5 new releases of the current year
+            # Query to find the top 5 new releases of the current year
             cur.execute("""
                 SELECT
                 m.movie_id,
@@ -52,6 +54,8 @@ def view_trends(username):
             LIMIT 5;
             """)    
             top_five_this_month = cur.fetchall()
+
+            # Display trend options to the user
             persist = True
             while(persist):
                 print("\n ===== TREND OPTIONS =====")
@@ -61,38 +65,13 @@ def view_trends(username):
                 print("4. Exit")
 
                 response = input("Choose an option!: ").strip()
-                if response == "1":
-                    print("\n--- TOP 20: Last 90 Days ---")
-                    for movie_id, title, count in top_twenty_last_ninety:
-                        print(f"{movie_id}: {title} - {count} plays")
-                    
 
-                elif response == "2":
-                    print("\n--- TOP 20: Your Following Watched")
-                    
-                    if not top_twenty_of_following:
-                        print("Users you follow have not watched anything recently!")
-                    else:
-                        for movie_id, title, count in top_twenty_of_following:
-                            print(f"{movie_id}: {title} - {count} plays")
-
-
-                elif response == "3":
-                    print("\n--- TOP 5 New Releases this Year! ---")
-                    if not top_five_this_month:
-                        print("No new releases found for this year.")
-                    else:
-                        for movie_id, title, year in top_five_this_month:
-                            print(f"{movie_id}: {title} ({year})")
-
-                elif response == "4":
-                    persist = False
-
-                else:
-                    print("\nInvalid response!  Please say either 1, 2, or 3.")
-        
+                # Logic to handle user input goes here
+                pass
     except Exception as e:
+        # Handle any exceptions that occur during the fetch operation
         print("Error fetching trend data.")
     finally:
+        # Ensure the connection and server are closed
         conn.close()
         server.stop()

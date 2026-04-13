@@ -1,3 +1,4 @@
+# Import modules for user, movies, playlists, follow, profile, and trends functionalities
 from user import *
 from movies import *
 from playlist import *
@@ -5,10 +6,12 @@ from follow import *
 from profile import *
 from trends import *
 
+# Function to display the main menu and handle user interactions
 def main_menu():
     current_user = None
     print("--- Betterboxd ---")
     while True:
+        # Display menu options based on whether the user is logged in
         if current_user:
             print(f"\nLogged in as: {current_user}")
             print("1. View profile")
@@ -25,9 +28,11 @@ def main_menu():
             print("3. Create account")
             print("4. Exit")
 
+        # Get user input for menu choice
         choice = input("Enter your choice: ").strip()
 
         if current_user:
+            # Handle logged-in user menu options
             if choice == "1":
                 get_user_profile_rating(current_user)
                 while True:
@@ -258,6 +263,7 @@ def main_menu():
 
 
         else:
+            # Handle menu options for users not logged in
             if choice == "1":
                 while True:
                     print("\n--- Movie Search (Guest) ---")
@@ -351,5 +357,6 @@ def main_menu():
                 print("Invalid option.")
 
 
+# Entry point of the application
 if __name__ == "__main__":
     main_menu()
