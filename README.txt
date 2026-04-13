@@ -16,3 +16,6 @@ HOW TO RUN IT:
     - BetterBox'd uses Datagrip for the database we created, which isn't something we can push to the Github.  If you'd like to see a demo of the software, 
     go to people.rit.edu/nos7651 and look for the BetterBox'd software!
 
+
+
+NOTE: This isn't the original repo, so the commits look like I just did everything at once.  The original repo was under one of my groupmates, but it wasn't public.  All code was created by me and 2 other groupmates.  
